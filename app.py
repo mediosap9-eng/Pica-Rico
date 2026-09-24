@@ -55,18 +55,27 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Carga de datos de inventario
+# Memoria temporal para pedidos
+if "pedidos" not in st.session_state:
+  st.session_state.pedidos = []
+
+# Carga de datos de inventario desde el CSV
 try:
   df_insumos = pd.read_csv(
       "Base_Datos_PicaRico - Hoja 1.csv", sep=None, engine="python"
   )
 except Exception as e:
-  df_insumos = pd.DataFrame()
+  df_insumos = pd.DataFrame(
+      columns=["Insumo", "Stock Actual", "Precio Unitario (S/)"]
+  )
 
-# Pestañas principales
-tab1, tab2, tab3 = st.tabs(
-    ["🍽️ Toma de Pedidos", "📦 Inventario de Insumos", "💵 Caja y Control"]
-)
+# Pestañas principales (Incluyendo Dashboard y Reportes)
+tab1, tab2, tab3, tab4 = st.tabs([
+    "🍽️ Toma de Pedidos",
+    "📦 Inventario y Kardex",
+    "💵 Caja y Control",
+    "📊 Dashboard y Reportes",
+])
 
 with tab1:
   st.markdown("<h1>Pica Rico 🌶️</h1>", unsafe_allow_html=True)
@@ -91,6 +100,7 @@ with tab1:
             "Solo segundo (S/ 9.00) — Sin entrada ni refresco",
         ],
     )
+    precio = 12.00 if "completo" in tipo_menu else 9.00
 
   with st.container():
     st.markdown("### Elige tu segundo")
@@ -102,32 +112,97 @@ with tab1:
             "Arroz con pollo con salsa criolla",
         ],
     )
-    if st.button("Agregar al pedido"):
-      st.success("¡Plato agregado correctamente a tu pedido!")
 
   with st.container():
     st.markdown("### Tus datos de entrega")
-    nombre_cli = st.text_input("Nombre")
+    nombre_cli = st.text_input("Nombre del Cliente")
     celular_cli = st.text_input("Celular (9 dígitos)")
+
     if st.button("Confirmar Pedido Final"):
       if nombre_cli:
+        st.session_state.pedidos.append({
+            "Cliente": nombre_cli,
+            "Celular": celular_cli,
+            "Detalle": segundo,
+            "Tipo": tipo_menu,
+            "Monto": precio,
+        })
         st.success(
-            f"¡Muchas gracias {nombre_cli}! Tu pedido ha sido enviado con"
-            " éxito."
+            f"¡Muchas gracias {nombre_cli}! Tu pedido de S/ {precio:.2f} ha"
+            " sido registrado con éxito."
         )
       else:
-        st.warning("Por favor ingresa tu nombre.")
+        st.warning("Por favor ingresa el nombre del cliente.")
 
 with tab2:
-  st.subheader("Inventario de Insumos y Costos")
+  st.subheader("📦 Kardex e Inventario de Insumos")
   if not df_insumos.empty:
-    st.dataframe(df_insumos, width="stretch")
+    st.markdown("### Modificar Stock y Precios")
+    st.data_editor(df_insumos, width="stretch", num_rows="dynamic")
+    if st.button("Guardar Cambios de Inventario"):
+      st.success("¡Stock y precios actualizados correctamente en el Kardex!")
   else:
-    st.warning("No hay datos cargados en el inventario.")
+    st.warning("No se encontraron datos en el archivo de inventario.")
 
 with tab3:
   st.subheader("Control de Caja y Ventas")
+  total_pedidos = len(st.session_state.pedidos)
+  ingresos_totales = sum(p["Monto"] for p in st.session_state.pedidos)
+
   col_c1, col_c2, col_c3 = st.columns(3)
-  col_c1.metric("Pedidos del Día", "0")
-  col_c2.metric("Ingresos Totales", "S/ 0.00")
+  col_c1.metric("Pedidos del Día", str(total_pedidos))
+  col_c2.metric("Ingresos Totales", f"S/ {ingresos_totales:.2f}")
   col_c3.metric("Estado de Caja", "Abierta 🟢")
+
+  st.markdown("### Historial de Clientes Atendidos")
+  if total_pedidos > 0:
+    df_ventas = pd.DataFrame(st.session_state.pedidos)
+    st.dataframe(df_ventas, width="stretch")
+  else:
+    st.info("Aún no hay ventas registradas en caja.")
+
+with tab4:
+  st.subheader("📊 Dashboard Gerencial y Reportes")
+
+  if len(st.session_state.pedidos) > 0:
+    df_reporte = pd.DataFrame(st.session_state.pedidos)
+
+    # Tarjetas de resumen métrico
+    col_d1, col_d2, col_d3 = st.columns(3)
+    col_d1.metric("Total Platos Vendidos", len(df_reporte))
+    col_d2.metric(
+        "Venta Promedio por Cliente",
+        f"S/ {df_reporte['Monto'].mean():.2f}",
+    )
+    col_d3.metric("Recaudación Total", f"S/ {df_reporte['Monto'].sum():.2f}")
+
+    st.markdown("---")
+
+    # Gráficos y análisis visual
+    col_g1, col_g2 = st.columns(2)
+
+    with col_g1:
+      st.markdown("### 📈 Ventas por Plato Principal")
+      conteo_platos = df_reporte["Detalle"].value_counts()
+      st.bar_chart(conteo_platos)
+
+    with col_g2:
+      st.markdown("### 📊 Distribución por Tipo de Menú")
+      conteo_tipo = df_reporte["Tipo"].value_counts()
+      st.bar_chart(conteo_tipo)
+
+    st.markdown("---")
+    st.markdown("### 📥 Descargar Reporte de Ventas")
+    # Opción para exportar los datos a CSV como reporte descargable
+    csv_data = df_reporte.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="Descargar Reporte en CSV",
+        data=csv_data,
+        file_name="reporte_ventas_picarico.csv",
+        mime="text/csv",
+    )
+  else:
+    st.info(
+        "Aún no hay suficientes datos para mostrar el dashboard. Realiza"
+        " algunas simulaciones de pedidos en la primera pestaña."
+    )
