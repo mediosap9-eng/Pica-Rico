@@ -1,0 +1,19 @@
+"Item,Categoria,Unidad,Stock_Actual,Stock_Minimo,Costo_Unitario_Soles,Proveedor,Ubicacion_Almacen
+Papa Amarilla,Materia Prima,KG,120.0,30.0,3.50,Mercado Mayorista,Almacén Central
+Carne de Res (Lomo),Materia Prima,KG,25.0,10.0,28.00,Frigorífico Local,Cámara de Frío
+Pechuga de Pollo,Materia Prima,KG,40.0,15.0,12.50,Avícola San Fernando,Cámara de Frío
+Arroz Extra 5kg,Insumos,SAK,15.0,5.0,21.00,Distribuidora Don Jorge,Estante 2
+Aceite Vegetal 1L,Insumos,BOT,30.0,10.0,9.80,Makro,Estante 1
+Sal Yodada 1kg,Insumos,BOL,10.0,3.0,2.50,Makro,Estante 1
+Aji Amarillo Molido,Insumos,POT,12.0,4.0,6.00,Mercado Central,Cámara de Frío
+Cebolla Roja,Materia Prima,KG,50.0,15.0,2.80,Mercado Mayorista,Almacén Central
+Tomate Italiano,Materia Prima,KG,35.0,10.0,3.20,Mercado Mayorista,Almacén Central
+Queso Fresco,Materia Prima,KG,15.0,5.0,16.00,Lácteos del Sur,Cámara de Frío
+Bolsa Kraft con Asa 26x32,Empaques,UND,450.0,100.0,0.45,GrafiPak Peru,Área de Empaque
+Contenedor Biodegradable 9x9,Empaques,UND,300.0,80.0,0.65,EcoEnvases,Área de Empaque
+Papel Manteca para Envoltura,Empaques,ROL,8.0,2.0,12.00,Distribuidora Industrial,Área de Empaque
+Caja de Cartón para Delivery Mediana,Embalaje,UND,200.0,50.0,1.20,Cartones del Perú,Zona de Embalaje
+Cinta de Embalaje Transparente,Embalaje,UND,25.0,5.0,4.50	Ferretería Industrial,Zona de Embalaje
+Film Stretch Industrial,Embalaje,ROL,6.0,2.0,35.00,Ferretería Industrial,Zona de Embalaje
+Servilletas de Papel Pack x100,Empaques,PAK,60.0,15.0,3.80,Makro,Área de Empaque
+Vasos de PLA 16oz con Tapa,Empaques,UND,180.0,40.0,0.55,EcoEnvases,Área de Empaque"
