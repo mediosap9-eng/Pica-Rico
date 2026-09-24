@@ -69,7 +69,7 @@ except Exception as e:
       columns=["Insumo", "Stock Actual", "Precio Unitario (S/)"]
   )
 
-# Pestañas principales (Incluyendo Dashboard y Reportes)
+# Pestañas principales
 tab1, tab2, tab3, tab4 = st.tabs([
     "🍽️ Toma de Pedidos",
     "📦 Inventario y Kardex",
@@ -138,7 +138,8 @@ with tab2:
   st.subheader("📦 Kardex e Inventario de Insumos")
   if not df_insumos.empty:
     st.markdown("### Modificar Stock y Precios")
-    st.data_editor(df_insumos, width="stretch", num_rows="dynamic")
+    # CORREGIDO: Se removió width="stretch" para evitar el error de Streamlit
+    st.data_editor(df_insumos, num_rows="dynamic")
     if st.button("Guardar Cambios de Inventario"):
       st.success("¡Stock y precios actualizados correctamente en el Kardex!")
   else:
@@ -157,7 +158,7 @@ with tab3:
   st.markdown("### Historial de Clientes Atendidos")
   if total_pedidos > 0:
     df_ventas = pd.DataFrame(st.session_state.pedidos)
-    st.dataframe(df_ventas, width="stretch")
+    st.dataframe(df_ventas)
   else:
     st.info("Aún no hay ventas registradas en caja.")
 
@@ -167,7 +168,6 @@ with tab4:
   if len(st.session_state.pedidos) > 0:
     df_reporte = pd.DataFrame(st.session_state.pedidos)
 
-    # Tarjetas de resumen métrico
     col_d1, col_d2, col_d3 = st.columns(3)
     col_d1.metric("Total Platos Vendidos", len(df_reporte))
     col_d2.metric(
@@ -178,7 +178,6 @@ with tab4:
 
     st.markdown("---")
 
-    # Gráficos y análisis visual
     col_g1, col_g2 = st.columns(2)
 
     with col_g1:
@@ -193,7 +192,6 @@ with tab4:
 
     st.markdown("---")
     st.markdown("### 📥 Descargar Reporte de Ventas")
-    # Opción para exportar los datos a CSV como reporte descargable
     csv_data = df_reporte.to_csv(index=False).encode("utf-8")
     st.download_button(
         label="Descargar Reporte en CSV",
