@@ -7,7 +7,7 @@ st.title("Inventario y Costos - Pica Rico")
 url_csv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ73geoKeOV7OMLo5HNC5mDYkHrHB-MKAoHC4wpgePoCEDwILcXR9Xl5tbakixFuCg3kEPXCaQg6qCT/pub?output=csv"
 
 if url_csv:
-  df = pd.read_csv(url_csv)
+  df = pd.read_csv(url_csv, sep=",")
   st.dataframe(df)
 else:
   st.info(
